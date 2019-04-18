@@ -33,8 +33,7 @@ above with some slight optimizations. I just think the idea is really cool.
 
 ## How does it work
 
-First create a model of some analytics events. It can be modularized arbitrarily however  
-you see fit. Annotate that model with @AutoAnalyticsEvent
+Create a model and annotate it with `@AutoAnalyticsEvent`
 
 ```kotlin
 InteractiveAnalytics.kt
@@ -42,23 +41,30 @@ InteractiveAnalytics.kt
 @AutoAnalyticsEvent
 sealed class InteractiveAnalytics {
   data class ButtonClicked(val buttonText: String) : InteractiveAnalytics()
+  data class LinkShared(val link: String) : InteractiveAnalytics()
 }
 ```
 
-You should always abstract away your actual analytics implementation with some  
-kind of generic wrapper to make it easier when you need to migrate implementations.  
-`AutoAnalytics` follows the same idea - we provide an interface which you implement  
-with your analytics implementation, called `AutoAnalytics`
+Implement the `AutoAnalytics` interface in your tracker class.
 
 ```kotlin
 
-class AnalyticsTracker(private val realAnalytics: RealAnalytics) : AutoAnalytics {
+class LoggingAnalyticsTracker() : AutoAnalytics {
 
   override fun track(name: String, payload: Map<String, Any?>) {
-    Log.d("AnalyticsTracker", "Tracking[$name]: $payload")
-    realAnalytics.track(name, payload)
+    Log.d("LoggingAnalyticsTracker", "Tracking[$name]: $payload")
   }
 }
+
+class GoogleOrMixpanelOrSomebodyAnalyticsTracker(
+  private val impl: GoogleOrMixpanel
+) : AutoAnalytics {
+
+  override fun track(name: String, payload: Map<String, Any?>) {
+    impl.track(name, payload)
+  }
+}
+
 ```
 
 When you compile the project, it will generate the following code into a file  
@@ -82,6 +88,12 @@ fun AutoAnalytics.track(event: InteractiveAnalytics) {
                 "button_text" to event.buttonText
             )
         }
+        is InteractiveAnalytics.LinkShared -> {
+            name = "link_shared"
+            payload = mapOf(
+                "link" to event.link
+            )
+        }
     }
     track(name, payload)
 }
@@ -91,10 +103,19 @@ fun AutoAnalytics.track(event: InteractiveAnalytics) {
 You can now call this generated extension function from your code to fire  
 off a specific analytics event. No more analytics as an afterthought!
 
+```kotlin
+  fun onButtonClicked(link: String) {
+
+    LoggingAnalyticsTracker().track(InteractiveAnalytics.ButtonClicked(button.text.toString()))
+
+    GoogleOrMixpanelOrSomebodyAnalyticsTracker().track(InteractiveAnalytics.LinkShared(link))
+  }
+```
+
 See the sample project for an example.
 
 The success of this model follows the same kind of idea as an MVI designed  
-architecure, the model of the Analytics payload maps 1-to-1 with an actual  
+architecture, the model of the Analytics payload maps 1-to-1 with an actual  
 Analytics event. Maybe your code base was already doing this, just with massive  
 amounts of boilerplate.
 
