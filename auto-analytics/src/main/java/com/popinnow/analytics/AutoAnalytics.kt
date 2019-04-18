@@ -16,8 +16,20 @@
 
 package com.popinnow.analytics
 
+/**
+ * [AutoAnalytics] is the target interface which generated code will extend.
+ *
+ * Generated extension methods will delegate their calls to the [track] method
+ * defined in this interface
+ */
 interface AutoAnalytics {
 
+  /**
+   * The actual track method
+   *
+   * Use this to call through to your real Analytics implementation, such as Mixpanel, Google
+   * or any other third party
+   */
   fun track(name: String, payload: Map<String, Any?>)
 }
 

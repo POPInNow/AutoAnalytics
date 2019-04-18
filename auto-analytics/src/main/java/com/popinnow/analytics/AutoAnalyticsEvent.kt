@@ -16,10 +16,11 @@
 
 package com.popinnow.analytics
 
-// Set Target as class since we want this annotation to be added to a class element
+/**
+ * Annotation which will tell the compiler to automatically generate tracking code
+ *
+ * Must apply to a sealed class.
+ */
 @Target(AnnotationTarget.CLASS)
-// Set retention as Source since we only need this annotation
-// during annotation processing process and
-// we don't need this class at runtime.
 @Retention(AnnotationRetention.SOURCE)
 annotation class AutoAnalyticsEvent
