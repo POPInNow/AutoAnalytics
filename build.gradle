@@ -25,7 +25,7 @@ buildscript {
   }
 
   dependencies {
-    classpath 'com.android.tools.build:gradle:3.3.2'
+    classpath 'com.android.tools.build:gradle:3.4.0'
 
     // Kotlin
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
@@ -51,7 +51,7 @@ ext {
   minSdk = 14
   maxSdk = 28
 
-  autoService = "1.0-rc4"
+  autoService = "1.0-rc5"
   kotlinPoet = "1.2.0"
   kotlinMetadata = "1.4.0"
 }
