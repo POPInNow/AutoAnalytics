@@ -22,29 +22,33 @@ import com.google.common.base.CaseFormat.UPPER_CAMEL
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.ParameterSpec
 import javax.annotation.CheckReturnValue
 
 @CheckReturnValue
 internal fun FunSpec.Builder.generateDeclaration(className: ClassName): FunSpec.Builder {
+  val parameter = ParameterSpec.builder(Extension.PARAMETER_NAME, className)
+      .build()
+
   return this
-    .receiver(EVENT_TRACKER_CLASS)
-    .addParameter(Extension.PARAMETER_NAME, className)
+      .receiver(EVENT_TRACKER_CLASS)
+      .addParameter(parameter)
 }
 
 @CheckReturnValue
 internal fun FunSpec.Builder.generateLocalVariableDeclarations(): FunSpec.Builder {
   return this
-    .addStatement("val %L: %T", Declaration.LOCAL_NAME_NAME, Declaration.LOCAL_NAME_TYPE)
-    .addStatement("val %L: %T", Declaration.LOCAL_PAYLOAD_NAME, Declaration.LOCAL_PAYLOAD_TYPE)
+      .addStatement("val %L: %T", Declaration.LOCAL_NAME_NAME, Declaration.LOCAL_NAME_TYPE)
+      .addStatement("val %L: %T", Declaration.LOCAL_PAYLOAD_NAME, Declaration.LOCAL_PAYLOAD_TYPE)
 }
 
 @CheckReturnValue
 internal fun FunSpec.Builder.generateDelegatedMethodCall(): FunSpec.Builder {
   return this.addStatement(
-    "%L(%L, %L)",
-    Extension.FUNCTION_NAME,
-    Declaration.LOCAL_NAME_NAME,
-    Declaration.LOCAL_PAYLOAD_NAME
+      "%L(%L, %L)",
+      Extension.FUNCTION_NAME,
+      Declaration.LOCAL_NAME_NAME,
+      Declaration.LOCAL_PAYLOAD_NAME
   )
 }
 
@@ -56,9 +60,9 @@ internal fun FunSpec.Builder.generateWhenStatement(
   val functionEmptyMap = ClassName("kotlin.collections", "emptyMap")
 
   return this
-    .beginControlFlow("when (%L)", Extension.PARAMETER_NAME)
-    .generateWhenCases(analyticEvents, functionMapOf, functionEmptyMap)
-    .endControlFlow()
+      .beginControlFlow("when (%L)", Extension.PARAMETER_NAME)
+      .generateWhenCases(analyticEvents, functionMapOf, functionEmptyMap)
+      .endControlFlow()
 }
 
 @CheckReturnValue
@@ -83,21 +87,21 @@ private fun generateWhenCase(
   functionEmptyMap: ClassName
 ): CodeBlock {
   return CodeBlock.builder()
-    .addStatement("is %T -> {", caseName)
-    .indent()
-    .addName(caseName)
-    .addPayload(parameterList, functionMapOf, functionEmptyMap)
-    .unindent()
-    .addStatement("}")
-    .build()
+      .addStatement("is %T -> {", caseName)
+      .indent()
+      .addName(caseName)
+      .addPayload(parameterList, functionMapOf, functionEmptyMap)
+      .unindent()
+      .addStatement("}")
+      .build()
 }
 
 @CheckReturnValue
 private fun CodeBlock.Builder.addName(caseName: ClassName): CodeBlock.Builder {
   return this.addStatement(
-    "%L = %S",
-    Declaration.LOCAL_NAME_NAME,
-    caseName.asPayloadKey(UPPER_CAMEL)
+      "%L = %S",
+      Declaration.LOCAL_NAME_NAME,
+      caseName.asPayloadKey(UPPER_CAMEL)
   )
 }
 
@@ -120,21 +124,21 @@ private fun CodeBlock.Builder.addEventPayload(
   functionMapOf: ClassName
 ): CodeBlock.Builder {
   return this.addStatement("%L = %T(", Declaration.LOCAL_PAYLOAD_NAME, functionMapOf)
-    .indent()
-    .apply {
-      for ((index, parameter) in parameterList.withIndex()) {
-        val size = parameterList.size
-        addStatement(
-          "%S to %L.%L%L",
-          parameter.toSnakeCase(CaseFormat.LOWER_CAMEL),
-          Extension.PARAMETER_NAME,
-          parameter,
-          if (index == size - 1) "" else ","
-        )
+      .indent()
+      .apply {
+        for ((index, parameter) in parameterList.withIndex()) {
+          val size = parameterList.size
+          addStatement(
+              "%S to %L.%L%L",
+              parameter.toSnakeCase(CaseFormat.LOWER_CAMEL),
+              Extension.PARAMETER_NAME,
+              parameter,
+              if (index == size - 1) "" else ","
+          )
+        }
       }
-    }
-    .unindent()
-    .addStatement(")")
+      .unindent()
+      .addStatement(")")
 }
 
 @CheckReturnValue
