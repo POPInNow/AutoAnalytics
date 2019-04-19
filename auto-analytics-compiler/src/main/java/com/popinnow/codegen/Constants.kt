@@ -46,3 +46,9 @@ internal object Declaration {
   }
 
 }
+
+internal object FunctionTypes {
+
+  internal val MAP_OF = ClassName("kotlin.collections", "mapOf")
+  internal val EMPTY_MAP = ClassName("kotlin.collections", "emptyMap")
+}

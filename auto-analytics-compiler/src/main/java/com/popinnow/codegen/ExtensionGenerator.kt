@@ -53,27 +53,18 @@ internal fun FunSpec.Builder.generateDelegatedMethodCall(): FunSpec.Builder {
 }
 
 @CheckReturnValue
-internal fun FunSpec.Builder.generateWhenStatement(
-  analyticEvents: Map<ClassName, List<String>>
-): FunSpec.Builder {
-  val functionMapOf = ClassName("kotlin.collections", "mapOf")
-  val functionEmptyMap = ClassName("kotlin.collections", "emptyMap")
-
+internal fun FunSpec.Builder.generateWhenStatement(analyticEvents: Map<ClassName, List<String>>): FunSpec.Builder {
   return this
       .beginControlFlow("when (%L)", Extension.PARAMETER_NAME)
-      .generateWhenCases(analyticEvents, functionMapOf, functionEmptyMap)
+      .generateWhenCases(analyticEvents)
       .endControlFlow()
 }
 
 @CheckReturnValue
-private fun FunSpec.Builder.generateWhenCases(
-  analyticEvents: Map<ClassName, List<String>>,
-  functionMapOf: ClassName,
-  functionEmptyMap: ClassName
-): FunSpec.Builder {
+private fun FunSpec.Builder.generateWhenCases(analyticEvents: Map<ClassName, List<String>>): FunSpec.Builder {
   var builder = this
   for ((caseName, parameterList) in analyticEvents) {
-    val whenCase = generateWhenCase(caseName, parameterList, functionMapOf, functionEmptyMap)
+    val whenCase = generateWhenCase(caseName, parameterList)
     builder = builder.addCode(whenCase)
   }
   return builder
@@ -82,15 +73,13 @@ private fun FunSpec.Builder.generateWhenCases(
 @CheckReturnValue
 private fun generateWhenCase(
   caseName: ClassName,
-  parameterList: List<String>,
-  functionMapOf: ClassName,
-  functionEmptyMap: ClassName
+  parameterList: List<String>
 ): CodeBlock {
   return CodeBlock.builder()
       .addStatement("is %T -> {", caseName)
       .indent()
       .addName(caseName)
-      .addPayload(parameterList, functionMapOf, functionEmptyMap)
+      .addPayload(parameterList)
       .unindent()
       .addStatement("}")
       .build()
@@ -106,24 +95,17 @@ private fun CodeBlock.Builder.addName(caseName: ClassName): CodeBlock.Builder {
 }
 
 @CheckReturnValue
-private fun CodeBlock.Builder.addPayload(
-  parameterList: List<String>,
-  functionMapOf: ClassName,
-  functionEmptyMap: ClassName
-): CodeBlock.Builder {
+private fun CodeBlock.Builder.addPayload(parameterList: List<String>): CodeBlock.Builder {
   return if (parameterList.isNotEmpty()) {
-    addEventPayload(parameterList, functionMapOf)
+    addEventPayload(parameterList)
   } else {
-    addEmptyPayload(functionEmptyMap)
+    addEmptyPayload()
   }
 }
 
 @CheckReturnValue
-private fun CodeBlock.Builder.addEventPayload(
-  parameterList: List<String>,
-  functionMapOf: ClassName
-): CodeBlock.Builder {
-  return this.addStatement("%L = %T(", Declaration.LOCAL_PAYLOAD_NAME, functionMapOf)
+private fun CodeBlock.Builder.addEventPayload(parameterList: List<String>): CodeBlock.Builder {
+  return this.addStatement("%L = %T(", Declaration.LOCAL_PAYLOAD_NAME, FunctionTypes.MAP_OF)
       .indent()
       .apply {
         for ((index, parameter) in parameterList.withIndex()) {
@@ -142,8 +124,8 @@ private fun CodeBlock.Builder.addEventPayload(
 }
 
 @CheckReturnValue
-private fun CodeBlock.Builder.addEmptyPayload(functionEmptyMap: ClassName): CodeBlock.Builder {
-  return this.addStatement("%L = %T()", Declaration.LOCAL_PAYLOAD_NAME, functionEmptyMap)
+private fun CodeBlock.Builder.addEmptyPayload(): CodeBlock.Builder {
+  return this.addStatement("%L = %T()", Declaration.LOCAL_PAYLOAD_NAME, FunctionTypes.EMPTY_MAP)
 }
 
 @CheckReturnValue
