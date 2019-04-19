@@ -76,12 +76,10 @@ private fun generateWhenCase(
   parameterList: List<String>
 ): CodeBlock {
   return CodeBlock.builder()
-      .addStatement("is %T -> {", caseName)
-      .indent()
+      .beginControlFlow("is %T ->", caseName)
       .addName(caseName)
       .addPayload(parameterList)
-      .unindent()
-      .addStatement("}")
+      .endControlFlow()
       .build()
 }
 
@@ -108,14 +106,13 @@ private fun CodeBlock.Builder.addEventPayload(parameterList: List<String>): Code
   return this.addStatement("%L = %T(", Declaration.LOCAL_PAYLOAD_NAME, FunctionTypes.MAP_OF)
       .indent()
       .apply {
-        for ((index, parameter) in parameterList.withIndex()) {
-          val size = parameterList.size
+        for (parameter in parameterList) {
           addStatement(
               "%S to %L.%L%L",
               parameter.toSnakeCase(CaseFormat.LOWER_CAMEL),
               Extension.PARAMETER_NAME,
               parameter,
-              if (index == size - 1) "" else ","
+              if (parameter == parameterList.last()) "" else ","
           )
         }
       }
@@ -128,14 +125,20 @@ private fun CodeBlock.Builder.addEmptyPayload(): CodeBlock.Builder {
   return this.addStatement("%L = %T()", Declaration.LOCAL_PAYLOAD_NAME, FunctionTypes.EMPTY_MAP)
 }
 
-@CheckReturnValue
-private fun String.toSnakeCase(fromCase: CaseFormat): String {
-  return convertCase(fromCase, LOWER_UNDERSCORE)
-}
-
+/**
+ * Convert ClassName names to lower_underscore_case
+ */
 @CheckReturnValue
 private fun ClassName.asPayloadKey(fromCase: CaseFormat): String {
   return simpleName.convertCase(fromCase, LOWER_UNDERSCORE)
+}
+
+/**
+ * Convert strings to lower_underscore_case
+ */
+@CheckReturnValue
+private fun String.toSnakeCase(fromCase: CaseFormat): String {
+  return convertCase(fromCase, LOWER_UNDERSCORE)
 }
 
 /**
