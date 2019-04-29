@@ -34,18 +34,18 @@ internal object CodeGenerator {
     val className = analyticsElement.asClassName()
 
     val extensionFunction = FunSpec
-      .builder(Extension.FUNCTION_NAME)
-      .generateKDoc(className)
-      .generateDeclaration(className)
-      .generateLocalVariableDeclarations()
-      .generateWhenStatement(analyticEvents)
-      .generateDelegatedMethodCall()
-      .build()
+        .builder(Extension.FUNCTION_NAME)
+        .generateKDoc(className)
+        .generateDeclaration(className)
+        .generateLocalVariableDeclarations()
+        .generateWhenStatement(analyticEvents)
+        .generateDelegatedMethodCall()
+        .build()
 
     FileSpec.builder(className.packageName, "AutoAnalytics_${className.simpleName}")
-      .addFunction(extensionFunction)
-      .build()
-      .writeTo(outputDir)
+        .addFunction(extensionFunction)
+        .build()
+        .writeTo(outputDir)
   }
 }
 

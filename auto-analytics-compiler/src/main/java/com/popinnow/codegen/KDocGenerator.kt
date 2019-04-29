@@ -32,9 +32,9 @@ private fun generateKdoc(className: ClassName): CodeBlock {
   val explanation =
     "Converts [%T] to a name and payload and delegates it to [%T.${Extension.FUNCTION_NAME}]."
   return CodeBlock.builder()
-    .addStatement(explanation, className, EVENT_TRACKER_CLASS)
-    .addStatement("")
-    .addStatement("This is a generated function. Do not edit.")
-    .build()
+      .addStatement(explanation, className, EVENT_TRACKER_CLASS)
+      .addStatement("")
+      .addStatement("This is a generated function. Do not edit.")
+      .build()
 }
 

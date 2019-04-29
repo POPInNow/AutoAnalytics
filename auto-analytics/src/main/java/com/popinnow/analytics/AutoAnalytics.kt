@@ -30,6 +30,9 @@ interface AutoAnalytics {
    * Use this to call through to your real Analytics implementation, such as Mixpanel, Google
    * or any other third party
    */
-  fun track(name: String, payload: Map<String, Any?>)
+  fun track(
+    name: String,
+    payload: Map<String, Any?>
+  )
 }
 

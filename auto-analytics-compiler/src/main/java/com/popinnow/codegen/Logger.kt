@@ -22,18 +22,31 @@ import javax.tools.Diagnostic.Kind.ERROR
 import javax.tools.Diagnostic.Kind.NOTE
 import javax.tools.Diagnostic.Kind.WARNING
 
-internal fun KotlinProcessingEnvironment.logError(scope: String, message: String) {
+internal fun KotlinProcessingEnvironment.logError(
+  scope: String,
+  message: String
+) {
   log(ERROR, scope, message)
 }
 
-internal fun KotlinProcessingEnvironment.logWarn(scope: String, message: String) {
+internal fun KotlinProcessingEnvironment.logWarn(
+  scope: String,
+  message: String
+) {
   log(WARNING, scope, message)
 }
 
-internal fun KotlinProcessingEnvironment.logDebug(scope: String, message: String) {
+internal fun KotlinProcessingEnvironment.logDebug(
+  scope: String,
+  message: String
+) {
   log(NOTE, scope, message)
 }
 
-internal fun KotlinProcessingEnvironment.log(kind: Kind, scope: String, message: String) {
+internal fun KotlinProcessingEnvironment.log(
+  kind: Kind,
+  scope: String,
+  message: String
+) {
   messager.printMessage(kind, "AutoAnalytics[$scope] $message")
 }

@@ -63,8 +63,8 @@ class AnalyticsEventProcessor internal constructor(
       val analyticsElement = getAnalyticsElement(element)
       if (analyticsElement == null) {
         logWarn(
-          "process",
-          "Could not find any of $supportedAnnotationTypes on element: $element. Skipping"
+            "process",
+            "Could not find any of $supportedAnnotationTypes on element: $element. Skipping"
         )
         continue
       }

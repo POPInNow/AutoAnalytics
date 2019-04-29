@@ -40,7 +40,6 @@ buildscript {
     // Gradle version checker
     classpath 'com.github.ben-manes:gradle-versions-plugin:0.21.0'
   }
-
 }
 
 ext {

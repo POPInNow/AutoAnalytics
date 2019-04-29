@@ -20,7 +20,10 @@ import android.util.Log
 
 class AnalyticsTracker : AutoAnalytics {
 
-  override fun track(name: String, payload: Map<String, Any?>) {
+  override fun track(
+    name: String,
+    payload: Map<String, Any?>
+  ) {
     Log.d("AnalyticsTracker", "Tracking[$name]: $payload")
   }
 }

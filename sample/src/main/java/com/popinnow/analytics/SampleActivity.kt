@@ -44,9 +44,9 @@ class SampleActivity : Activity() {
 
     // On the fly tracking, generally not recommended - but you do you.
     tracker.track(
-      "Activity save instance failed", mapOf(
+        "Activity save instance failed", mapOf(
         "bundle" to outState
-      )
+    )
     )
   }
 
